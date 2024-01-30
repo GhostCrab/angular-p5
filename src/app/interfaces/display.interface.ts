@@ -14,6 +14,6 @@ export class Display implements IDisplay {
   constructor(s: p5, w: number, h: number) {
     this.w = w;
     this.h = h;
-    this.renderer = s.createCanvas(this.w, this.h);
+    this.renderer = s.createCanvas(this.w, this.h, s.WEBGL);
   }
 }

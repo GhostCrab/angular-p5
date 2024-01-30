@@ -15,8 +15,8 @@ export class State implements IState {
   objs: IPhysicsObject[] = [];
 
   update(s: p5, dt: number) {
-    let cy = this.display ? this.display.h / 2 : 0;
-    let cx = this.display ? this.display.w / 2 : 0;
+    let cy = 0;
+    let cx = 0;
     let cr = this.display ? (this.display.h / 2) - 50 : 0;
     if (this.display !== undefined) {
       this.objs.forEach(obj => obj.applyGravity(.001));

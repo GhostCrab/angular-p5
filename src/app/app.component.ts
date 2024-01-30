@@ -23,11 +23,15 @@ export class AppComponent implements OnInit {
   title = 'angular-p5';
 
   state: IState = new State();
+  font?: p5.Font;
+  shader?: p5.Shader;
 
   ngOnInit() {
     const sketch = (s: p5) => {
-      
-      s.preload = () => {}
+      s.preload = () => {
+        this.font = s.loadFont('./assets/JetBrainsMono-Regular.ttf');
+        this.shader = s.loadShader('./assets/shader.vert', './assets/shader.frag');
+      }
 
       s.setup = () => {
         this.state.display = new Display(s, document.documentElement.clientWidth, document.documentElement.clientHeight);
@@ -35,31 +39,51 @@ export class AppComponent implements OnInit {
         s.frameRate(120);
 
         for (let i = 1; i < 21; ++i) {
-          let startPos = s.createVector(300 + (30*i), this.state.display.h / 2);
+          let startPos = s.createVector(-200 + (30*i), 0);
           this.state.objs.push(new PhysicsObject(s, startPos.copy(), startPos.copy(), 20, s.color(255)));
         }
       }
 
       s.draw = () => {
         s.background(30);
+
+        const left = -(document.documentElement.clientWidth / 2);
+        const top = -(document.documentElement.clientHeight / 2);
+
+        // if (this.shader) {
+        //   s.noStroke();
+        //   s.shader(this.shader);
+        //   s.rect(0, 0, 10, 10);
+        // }
+
+        s.resetShader();
+        s.stroke(1);
         
-        s.fill(255);
-        s.text(s.getTargetFrameRate(), 3, 20);
-        s.text(s.frameCount, 3, 40);
-        s.text(s.deltaTime.toFixed(2), 3, 60);
-        s.text(((1 / s.deltaTime) * 1000).toFixed(2), 3, 80);
-        s.text(this.state.objs.length, 3, 100);
-
-        if (s.mouseIsPressed) {
-          let startPos = s.createVector(s.mouseX, s.mouseY);
-          this.state.objs.push(new PhysicsObject(s, startPos.copy(), startPos.copy(), 20, s.color(255)));
+        if (this.font) {
+          const fontSize = 14;
+          s.fill(255);
+          s.textFont(this.font);
+          s.textSize(fontSize);
+          s.text(s.getTargetFrameRate(), left, top + ((fontSize + 2) * 1));
+          s.text(s.frameCount, left, top + ((fontSize + 2) * 2));
+          s.text(s.deltaTime.toFixed(2), left, top + ((fontSize + 2) * 3));
+          s.text(((1 / s.deltaTime) * 1000).toFixed(2), left, top + ((fontSize + 2) * 4));
+          s.text(this.state.objs.length, left, top + ((fontSize + 2) * 5));
         }
 
-        let stepSize = 10;
-        for (let i = 0; i < stepSize; ++i) {
-          this.state.update(s, s.deltaTime / stepSize);
+        if (1) {
+          if (s.mouseIsPressed) {
+            let startPos = s.createVector(s.mouseX + left, s.mouseY + top);
+            this.state.objs.push(new PhysicsObject(s, startPos.copy(), startPos.copy(), 20, s.color(255)));
+          }
+
+          let deltaTime = Math.min(s.deltaTime, 16.666);
+          let stepSize = 4;
+          for (let i = 0; i < stepSize; ++i) {
+            this.state.update(s, deltaTime / stepSize);
+          }
+          this.state.draw(s);
         }
-        this.state.draw(s);
       }
     }
 
