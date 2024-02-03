@@ -1,6 +1,7 @@
 import * as p5 from "p5";
 
 export interface IPhysicsObject {
+  index: number;
   position: p5.Vector;
   lastPosition: p5.Vector;
   acceleration: p5.Vector;
@@ -16,6 +17,7 @@ export interface IPhysicsObject {
 }
 
 export class PhysicsObject implements IPhysicsObject {
+  index: number;
   position: p5.Vector;
   lastPosition: p5.Vector;
   acceleration: p5.Vector;
@@ -25,11 +27,20 @@ export class PhysicsObject implements IPhysicsObject {
 
   private VELOCITY_DAMPENING: number = .750;
 
+  static defaultRadius = 5;
+  static collisionGrid: Array<Array<IPhysicsObject>>;
+  static collisionGridSquareSize: number;
+  static collisionGridHeight: number;
+  static collisionGridWidth: number;
+
+  static uniqueId = 0;
+
   constructor(s: p5, position: p5.Vector, lastPosition: p5.Vector, radius: number, color: p5.Color) {
+    this.index = PhysicsObject.uniqueId++;
     this.position = position;
     this.lastPosition = lastPosition;
     this.acceleration = s.createVector(0, 0);
-    this.radius = radius;
+    this.radius = radius || PhysicsObject.defaultRadius;
     this.color = color;
   }
 
@@ -57,7 +68,7 @@ export class PhysicsObject implements IPhysicsObject {
     s.noStroke();
     s.fill(this.color);
 
-    s.circle(this.position.x, this.position.y, this.radius);
+    s.circle(this.position.x, this.position.y, this.radius*2);
   }
 
   applyGravity(grav: number) {
@@ -95,6 +106,24 @@ export class PhysicsObject implements IPhysicsObject {
 
       this.position.sub(obj1Offset);
       obj.position.add(obj2Offset);
+    }
+  }
+
+  static setupCollisionGrid(objs: IPhysicsObject[], fieldWidth: number, fieldHeight: number) {
+    PhysicsObject.collisionGrid = new Array<Array<IPhysicsObject>>();
+    PhysicsObject.collisionGridSquareSize = PhysicsObject.defaultRadius*2;
+    PhysicsObject.collisionGridHeight = Math.ceil(fieldHeight / PhysicsObject.collisionGridSquareSize);
+    PhysicsObject.collisionGridWidth = Math.ceil(fieldWidth / PhysicsObject.collisionGridSquareSize);
+
+    for (const obj of objs) {
+      let posX = Math.floor((obj.position.x + (fieldWidth / 2)) / PhysicsObject.collisionGridSquareSize),
+          posY = Math.floor((obj.position.y + (fieldHeight / 2)) / PhysicsObject.collisionGridSquareSize);
+
+      if (PhysicsObject.collisionGrid[(posY * PhysicsObject.collisionGridWidth) + posX] === undefined) {
+        PhysicsObject.collisionGrid[(posY * PhysicsObject.collisionGridWidth) + posX] = new Array<IPhysicsObject>();
+      }
+
+      PhysicsObject.collisionGrid[(posY * PhysicsObject.collisionGridWidth) + posX].push(obj);
     }
   }
 }
