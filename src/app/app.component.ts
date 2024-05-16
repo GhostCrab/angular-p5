@@ -62,6 +62,45 @@ export class AppComponent implements OnInit {
 
         this.state.update(s);
         this.state.draw(s);
+        // if (0) {
+        //   if (s.mouseIsPressed) {
+        //     let startPos = s.createVector(s.mouseX + left, s.mouseY + top);
+        //     this.state.objs.push(new PhysicsObject(s, startPos.copy(), startPos.copy(), 0, s.color(255)));
+        //   }
+
+        //   let deltaTime = Math.min(s.deltaTime, 16.666);
+        //   let stepSize = 4;
+        //   for (let i = 0; i < stepSize; ++i) {
+        //     this.state.update(s, deltaTime / stepSize);
+        //   }
+
+        //   this.state.draw(s);
+        // }
+
+        // if (this.shaderTexture && this.shader) {
+
+        //   this.shaderTexture.loadPixels();
+        //   s.text(this.shaderTexture.pixels[(((20 * w) + 8) * 4)+0], left, top + ((14 + 2) * 7));
+        //   s.text(this.shaderTexture.pixels[(((20 * w) + 8) * 4)+1], left, top + ((14 + 2) * 8));
+        //   s.text(this.shaderTexture.pixels[(((20 * w) + 8) * 4)+2], left, top + ((14 + 2) * 9));
+        //   s.text(this.shaderTexture.pixels[(((20 * w) + 8) * 4)+3], left, top + ((14 + 2) * 10));
+        //   // for (let y = 0; y < h; y += 20) { 
+        //   //   for (let x = 0; x < w; x += 20) { 
+        //   //     let intensity = this.shaderTexture.pixels[((y * w) + x) * 4] - 128;
+        //   //     let angle = Math.min(Math.max(((intensity* 1.1) / 128) * s.TWO_PI, -s.PI), s.PI);
+        //   //     // let angle = ((intensity* 1.5) / 255) * s.TWO_PI;
+        //   //     let cost = Math.cos(angle);
+        //   //     let sint = Math.sin(angle);
+        //   //     let xOff = (cost * 10) + (-sint * 10);
+        //   //     let yOff = (sint * 10) + ( cost * 10);
+        //   //     s.stroke(s.color(255-intensity, 255-intensity, 255));
+        //   //     let curX = x - (w/2);
+        //   //     let curY = y - (h/2);
+        //   //     s.line(curX, curY, curX+xOff, curY+yOff);
+        //   //     s.circle(curX+xOff, curY+yOff, 3);
+        //   //   } 
+        //   // }
+        // }
       }
     }
 
