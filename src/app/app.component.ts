@@ -14,15 +14,19 @@ export class AppComponent implements OnInit {
   title = 'angular-p5';
 
   perlinShader: PerlinShader = new PerlinShader();
+  shader: p5.Shader;
 
   state: State = new State();
   font: p5.Font;
+
+  frameTimeBuffer: number[] = [];
 
   ngOnInit() {
     const sketch = (s: p5) => {
       s.preload = () => {
         this.font = s.loadFont('./assets/JetBrainsMono-Regular.ttf');
         this.state.preload(s);
+        this.shader = s.loadShader('./assets/shader.vert', './assets/shader.frag');
         // this.perlinShader.preload(s);
       }
 
@@ -31,8 +35,11 @@ export class AppComponent implements OnInit {
         // this.perlinShader.setup(s);
 
         s.frameRate(120);
-        s.pixelDensity(1);
-        s.noSmooth();
+        // s.pixelDensity(1);
+        // s.noSmooth();
+
+        
+        this.shader.setUniform('p', [-0.74364388703, 0.13182590421]);;
       }
 
       s.draw = () => {
@@ -44,24 +51,50 @@ export class AppComponent implements OnInit {
         const top = -(h / 2);
 
         // this.perlinShader.draw(s);
+        this.shader.setUniform('r', 1.5 * Math.exp(-6.5 * (1 + Math.sin(s.millis() / 20000))));
+        this.shader.setUniform('millis', s.millis());
+        s.shader(this.shader);
+        s.noStroke();
+        // s.rect(-w/4, -h/4, w/2, h/2);
+        
+        s.push();
+        s.rotate(-s.millis()/4000);
+        //s.rect(-w/4, -h/4, w/2, h/2);
+        s.sphere(100)
+        s.pop()
 
         s.resetShader();
+
+        // s.push();
+        // s.rotate(-s.millis()/4000);
+        // s.rect(-w/4, -h/4, w/2, h/2);
+        
+        // s.pop()
+
+        
+
         s.stroke(1);
+
+        this.frameTimeBuffer.push(s.deltaTime);
+        if (this.frameTimeBuffer.length > s.getTargetFrameRate())
+          this.frameTimeBuffer.shift();
+        
+        const avgFrameTime = this.frameTimeBuffer.reduce((t, c) => t + c, 0) / this.frameTimeBuffer.length;
         
         if (this.font) {
           const fontSize = 14;
           s.fill(255);
           s.textFont(this.font);
           s.textSize(fontSize);
-          s.text(s.getTargetFrameRate(), left, top + ((fontSize + 2) * 1));
-          s.text(s.frameCount, left, top + ((fontSize + 2) * 2));
-          s.text(s.deltaTime.toFixed(2), left, top + ((fontSize + 2) * 3));
-          s.text(((1 / s.deltaTime) * 1000).toFixed(2), left, top + ((fontSize + 2) * 4));
-          s.text(this.state.objs.length, left, top + ((fontSize + 2) * 5));
+          s.text(`Frame #: ${s.frameCount}`, left, top + ((fontSize + 2) * 1));
+          s.text(`Frame Time: ${avgFrameTime.toFixed(2)}ms`, left, top + ((fontSize + 2) * 2));
+          s.text(`FPS: ${((1 / avgFrameTime) * 1000).toFixed(2)}`, left, top + ((fontSize + 2) * 3));
+          // s.text(`${this.state.objs.length} Objects`, left, top + ((fontSize + 2) * 4));
+          s.text(`${this.state.display.camera.centerX} ${this.state.display.camera.centerY} ${this.state.display.camera.centerZ}`, left, top + ((fontSize + 2) * 4));
+          s.text(`${this.state.display.camera.eyeX} ${this.state.display.camera.eyeY} ${this.state.display.camera.eyeZ}`, left, top + ((fontSize + 2) * 5));
+          s.text(`${this.state.display.camera.upX} ${this.state.display.camera.upY} ${this.state.display.camera.upZ}`, left, top + ((fontSize + 2) * 6));
         }
 
-        this.state.update(s);
-        this.state.draw(s);
         // if (0) {
         //   if (s.mouseIsPressed) {
         //     let startPos = s.createVector(s.mouseX + left, s.mouseY + top);
@@ -101,6 +134,13 @@ export class AppComponent implements OnInit {
         //   //   } 
         //   // }
         // }
+
+        // this.state.update(s);
+        // this.state.draw(s);
+      }
+
+      s.mouseDragged = () => {
+        s.orbitControl();
       }
     }
 

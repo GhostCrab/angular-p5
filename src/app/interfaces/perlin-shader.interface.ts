@@ -12,8 +12,6 @@ export class PerlinShader {
     this.shaderTexture = s.createGraphics(document.documentElement.clientWidth, document.documentElement.clientHeight, s.WEBGL);
     this.shaderTexture.loadPixels();
     this.shaderTexture.noStroke();
-
-    this.shader.setUniform('p', [-0.74364388703, 0.13182590421]);
   }
 
   draw(s: p5) {

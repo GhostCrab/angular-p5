@@ -25,16 +25,16 @@ export class State {
     const left = -(w / 2);
     const top = -(h / 2);
 
-    // if (s.mouseIsPressed) {
-    //   let startPos = s.createVector(s.mouseX + left, s.mouseY + top);
-    //   this.objs.push(new PhysicsObject(s, startPos.copy(), startPos.copy(), 0, s.color(255)));
-    // }
+    if (s.mouseIsPressed) {
+      let startPos = s.createVector(s.mouseX + left, s.mouseY + top);
+      this.objs.push(new PhysicsObject(s, startPos.copy(), startPos.copy(), 0, s.color(255)));
+    }
 
-    // let deltaTime = Math.min(s.deltaTime, 16.666);
-    // let stepSize = 4;
-    // for (let i = 0; i < stepSize; ++i) {
-    //   this.updatePhysicsObjects(s, deltaTime / stepSize);
-    // }
+    let deltaTime = Math.min(s.deltaTime, 16.666);
+    let stepSize = 4;
+    for (let i = 0; i < stepSize; ++i) {
+      this.updatePhysicsObjects(s, deltaTime / stepSize);
+    }
   }
 
   updatePhysicsObjects(s: p5, dt: number) {
@@ -69,6 +69,6 @@ export class State {
   }
 
   draw(s: p5) {
-    // this.objs.forEach(obj => obj.draw(s));
+    this.objs.forEach(obj => obj.draw(s));
   }
 }
